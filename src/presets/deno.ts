@@ -17,7 +17,7 @@ export const denoServer = defineNitroPreset({
       {
         name: 'inject-process',
         renderChunk (code, chunk) {
-          if (!chunk.isEntry && code.includes('ROLLUP_NO_REPLACE')) {
+          if (!chunk.isEntry || code.includes('ROLLUP_NO_REPLACE') || !code.includes('process')) {
             return
           }
 
