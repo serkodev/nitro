@@ -12,7 +12,7 @@ import type { Storage, BuiltinDriverName } from 'unstorage'
 import type { NodeExternalsOptions } from '../rollup/plugins/externals'
 import type { RollupConfig } from '../rollup/config'
 import type { Options as EsbuildOptions } from '../rollup/plugins/esbuild'
-import { CacheOptions } from '../runtime/types'
+import { CachedEventHandlerOptions } from '../runtime/types'
 import type { NitroErrorHandler, NitroDevEventHandler, NitroEventHandler } from './handler'
 import type { PresetOptions } from './presets'
 
@@ -63,9 +63,9 @@ type DeepPartial<T> = T extends Record<string, any> ? { [P in keyof T]?: DeepPar
 
 export type NitroPreset = NitroConfig | (() => NitroConfig)
 
-export interface NitroConfig extends DeepPartial<Omit<NitroOptions, 'routes'>> {
+export interface NitroConfig extends DeepPartial<Omit<NitroOptions, 'routeRules'>> {
   extends?: string | string[] | NitroPreset
-  routes?: { [path: string]: NitroRouteConfig }
+  routeRules?: { [path: string]: NitroRouteConfig }
 }
 
 export interface PublicAssetDir {
@@ -94,7 +94,7 @@ type IntRange<F extends number, T extends number> = Exclude<Enumerate<T>, Enumer
 type HTTPStatusCode = IntRange<100, 600>
 
 export interface NitroRouteConfig {
-  cache?: Exclude<CacheOptions, 'getKey' | 'transform'>
+  cache?: CachedEventHandlerOptions
   headers?: Record<string, string>
   redirect?: string | { to: string, statusCode?: HTTPStatusCode }
 
@@ -104,7 +104,7 @@ export interface NitroRouteConfig {
   static?: boolean | number
 }
 
-export interface NitroRouteOptions extends Omit<NitroRouteConfig, 'redirect' | 'cors' | 'swr' | 'static'> {
+export interface NitroRouteRules extends Omit<NitroRouteConfig, 'redirect' | 'cors' | 'swr' | 'static'> {
   redirect?: { to: string, statusCode: HTTPStatusCode }
 }
 
@@ -165,7 +165,7 @@ export interface NitroOptions extends PresetOptions {
   // Routing
   baseURL: string,
   handlers: NitroEventHandler[]
-  routes: { [path: string]: NitroRouteOptions }
+  routeRules: { [path: string]: NitroRouteRules }
   devHandlers: NitroDevEventHandler[]
   errorHandler: string
   devErrorHandler: NitroErrorHandler
